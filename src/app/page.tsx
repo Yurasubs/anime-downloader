@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import LoginScreen from '@/components/layout/LoginScreen';
 import SetupScreen from '@/components/layout/SetupScreen';
 import ServiceSelect from '@/components/layout/ServiceSelect';
@@ -11,7 +11,7 @@ import Notifications from '@/components/ui/Notifications';
 
 export default function Home() {
   const view = useAppStore((s) => s.view);
-  const { checkSetup } = useWebSocket();
+  const { checkSetup } = useAPI();
 
   useEffect(() => {
     checkSetup();

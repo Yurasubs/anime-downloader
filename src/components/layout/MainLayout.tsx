@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useWebSocket } from '@/lib/useWebSocket';
 import { useAppStore } from '@/lib/store';
 import Header from '@/components/layout/Header';
 import SearchPanel from '@/components/search/SearchPanel';
 import EpisodePanel from '@/components/search/EpisodePanel';
 import QueuePanel from '@/components/queue/QueuePanel';
 import DownloadProgress from '@/components/queue/DownloadProgress';
+import SettingsPanel from '@/components/settings/SettingsPanel';
 
-export type Tab = 'search' | 'queue';
+export type Tab = 'search' | 'queue' | 'settings';
 
 export default function MainLayout() {
   const [tab, setTab] = useState<Tab>('search');
@@ -30,6 +30,8 @@ export default function MainLayout() {
         )}
 
         {tab === 'queue' && <QueuePanel />}
+
+        {tab === 'settings' && <SettingsPanel />}
       </main>
     </div>
   );

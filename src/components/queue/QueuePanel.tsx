@@ -1,6 +1,6 @@
 'use client';
 
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import { useAppStore } from '@/lib/store';
 import {
   Play,
@@ -16,7 +16,7 @@ export default function QueuePanel() {
   const queue = useAppStore((s) => s.queue);
   const queueRunning = useAppStore((s) => s.queueRunning);
   const isDownloading = useAppStore((s) => s.isDownloading);
-  const { setDownloadQueue, removeFromQueue, clearQueue } = useWebSocket();
+  const { setDownloadQueue, removeFromQueue, clearQueue } = useAPI();
 
   return (
     <div className="space-y-4">
@@ -35,11 +35,10 @@ export default function QueuePanel() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setDownloadQueue(!queueRunning)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              queueRunning
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${queueRunning
                 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20'
                 : 'bg-success/10 text-success border border-success/30 hover:bg-success/20'
-            }`}
+              }`}
           >
             {queueRunning ? (
               <>
@@ -110,12 +109,12 @@ function QueueItemCard({
         <img
           src={item.image}
           alt=""
-          className="w-14 h-20 rounded-lg object-cover flex-shrink-0 bg-background"
+          className="w-28 aspect-video rounded-md shadow-sm object-cover flex-shrink-0 bg-background"
           loading="lazy"
         />
       ) : (
-        <div className="w-14 h-20 rounded-lg bg-background flex-shrink-0 flex items-center justify-center">
-          <Download className="w-4 h-4 text-muted/30" />
+        <div className="w-28 aspect-video rounded-md shadow-sm bg-background flex-shrink-0 flex items-center justify-center">
+          <Download className="w-6 h-6 text-muted/30" />
         </div>
       )}
 

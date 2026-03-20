@@ -59,3 +59,19 @@ body {
   background-size: 200% 100%;
   background-image: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.05) 50%, transparent 75%);
 }
+
+.setting-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--foreground);
+  outline: none;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.setting-input:focus {
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.3);
+  border-color: #6366f1;
+}

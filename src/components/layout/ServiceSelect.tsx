@@ -1,6 +1,6 @@
 'use client';
 
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import { useAppStore } from '@/lib/store';
 import type { ServiceType } from '@/types';
 
@@ -29,7 +29,7 @@ const services: { id: ServiceType; name: string; description: string; color: str
 ];
 
 export default function ServiceSelect() {
-  const { selectService } = useWebSocket();
+  const { selectService } = useAPI();
   const version = useAppStore((s) => s.version);
   const addNotification = useAppStore((s) => s.addNotification);
 

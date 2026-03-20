@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import { useAppStore } from '@/lib/store';
 import {
   Loader2,
@@ -57,7 +57,7 @@ export default function EpisodePanel() {
   const setDownloadOption = useAppStore((s) => s.setDownloadOption);
   const availableDubCodes = useAppStore((s) => s.availableDubCodes);
   const availableSubCodes = useAppStore((s) => s.availableSubCodes);
-  const { listEpisodes, resolveItems } = useWebSocket();
+  const { listEpisodes, resolveItems } = useAPI();
 
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -118,7 +118,7 @@ export default function EpisodePanel() {
         dubLang: downloadOptions.dubLang,
         dlsubs: downloadOptions.dlsubs,
         q: downloadOptions.q,
-        fileName: downloadOptions.fileName,
+        fileName: downloadOptions.fileName || '[${service}] ${showTitle} - S${season}E${episode} [${height}p]',
         dlVideoOnce: downloadOptions.dlVideoOnce,
         all: selected.size === episodes.length,
         but: downloadOptions.but,

@@ -51,7 +51,7 @@ export type ResolveItemsData = {
   noaudio: boolean;
   dlVideoOnce: boolean;
   e: string;
-  fileName: string;
+  fileName?: string;
   q: number;
   dlsubs: string[];
 };
@@ -108,9 +108,3 @@ export type GUIConfig = {
   password?: string;
 };
 
-// WebSocket message types
-export type WSMessage = {
-  name: string;
-  data: unknown;
-  id: string;
-};

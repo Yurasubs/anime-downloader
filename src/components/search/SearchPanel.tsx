@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import { useAppStore } from '@/lib/store';
 import { Search, Loader2, Star, ChevronRight } from 'lucide-react';
 import type { SearchResponseItem } from '@/types';
@@ -18,7 +18,7 @@ export default function SearchPanel() {
   const setEpisodes = useAppStore((s) => s.setEpisodes);
   const addNotification = useAppStore((s) => s.addNotification);
   const service = useAppStore((s) => s.service);
-  const { search } = useWebSocket();
+  const { search } = useAPI();
 
   const handleSearch = async (e?: FormEvent, pageNum = 1) => {
     e?.preventDefault();

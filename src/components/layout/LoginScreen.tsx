@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import { useAppStore } from '@/lib/store';
 import { Lock, Loader2 } from 'lucide-react';
 
 export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { connectPrivate } = useWebSocket();
+  const { connectPrivate } = useAPI();
   const addNotification = useAppStore((s) => s.addNotification);
 
   const handleSubmit = async (e: FormEvent) => {

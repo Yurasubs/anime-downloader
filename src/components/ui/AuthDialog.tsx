@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useWebSocket } from '@/lib/useWebSocket';
+import { useAPI } from '@/lib/useAPI';
 import { useAppStore } from '@/lib/store';
 import { X, Loader2, User, CheckCircle } from 'lucide-react';
 
@@ -9,7 +9,7 @@ export default function AuthDialog({ onClose }: { onClose: () => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { authenticate, checkToken } = useWebSocket();
+  const { authenticate, checkToken } = useAPI();
   const addNotification = useAppStore((s) => s.addNotification);
   const isAuthenticated = useAppStore((s) => s.isAuthenticated);
   const setIsAuthenticated = useAppStore((s) => s.setIsAuthenticated);
