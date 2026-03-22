@@ -123,6 +123,11 @@ class WSBridge {
             throw new Error("WebSocket not connected")
         }
 
+        if (name === "setDownloadQueue") {
+            this.poll.queueRunning = data as boolean
+            this.emitState()
+        }
+
         const id = randomUUID()
 
         const promise = new Promise<T>((resolve, reject) => {
@@ -147,6 +152,12 @@ class WSBridge {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
             throw new Error("WebSocket not connected")
         }
+
+        if (name === "setDownloadQueue") {
+            this.poll.queueRunning = data as boolean
+            this.emitState()
+        }
+
         const id = randomUUID()
         this.ws.send(JSON.stringify({ name, data, id }))
     }
@@ -213,6 +224,10 @@ class WSBridge {
                 break
             case "queueChange":
                 this.poll.queue = msg.data as unknown[]
+                if (this.poll.queue.length === 0 && this.poll.queueRunning) {
+                    this.poll.queueRunning = false
+                    this.sendNoWait("setDownloadQueue", false)
+                }
                 changed = true
                 break
             case "current":

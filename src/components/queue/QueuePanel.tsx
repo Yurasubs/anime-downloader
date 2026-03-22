@@ -28,10 +28,13 @@ export default function QueuePanel() {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setDownloadQueue(!queueRunning)}
+                        disabled={queue.length === 0}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                            queueRunning
-                                ? "bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20"
-                                : "bg-success/10 text-success border border-success/30 hover:bg-success/20"
+                            queue.length === 0
+                                ? "bg-surface-hover text-muted border border-border opacity-50 cursor-not-allowed"
+                                : queueRunning
+                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20"
+                                  : "bg-success/10 text-success border border-success/30 hover:bg-success/20"
                         }`}
                     >
                         {queueRunning ? (

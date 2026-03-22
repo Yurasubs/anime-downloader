@@ -19,7 +19,7 @@ export default function SearchPanel() {
     const setEpisodes = useAppStore(s => s.setEpisodes)
     const addNotification = useAppStore(s => s.addNotification)
     const service = useAppStore(s => s.service)
-    const { search } = useAPI()
+    const { search, listEpisodes } = useAPI()
 
     const handleSearch = async (e?: FormEvent, pageNum = 1) => {
         e?.preventDefault()
@@ -28,18 +28,44 @@ export default function SearchPanel() {
         setIsSearching(true)
         setPage(pageNum)
         try {
-            const result = await search({
-                search: query,
-                page: pageNum,
-                ...(searchType ? { "search-type": searchType } : {})
-            })
-            if (result.isOk) {
-                setSearchResults(result.value)
+            if (searchType === "id") {
+                // Bypass normal search and try to fetch episodes directly by ID
+                const epResult = await listEpisodes(query.trim())
+                if (epResult.isOk && epResult.value.length > 0) {
+                    const firstEp = epResult.value[0]
+                    setSearchResults([
+                        {
+                            id: query.trim(),
+                            name: firstEp.seasonTitle || firstEp.name || `Series ID: ${query}`,
+                            image: firstEp.img || "",
+                            desc: "Resolved from Series ID",
+                            rating: 0
+                        }
+                    ])
+                } else {
+                    setSearchResults([])
+                    addNotification(
+                        epResult.isOk
+                            ? "No episodes found for this ID"
+                            : `Fetch failed: ${epResult.reason?.message || "Unknown error"}`,
+                        "error"
+                    )
+                }
             } else {
-                addNotification(`Search failed: ${result.reason.message}`, "error")
+                // Normal search
+                const result = await search({
+                    search: query.trim(),
+                    page: pageNum,
+                    ...(searchType ? { "search-type": searchType } : {})
+                })
+                if (result.isOk) {
+                    setSearchResults(result.value)
+                } else {
+                    addNotification(`Search failed: ${result.reason.message}`, "error")
+                }
             }
         } catch {
-            addNotification("Search failed", "error")
+            addNotification("Search/Fetch failed", "error")
         } finally {
             setIsSearching(false)
         }
@@ -60,7 +86,7 @@ export default function SearchPanel() {
                             type="text"
                             value={query}
                             onChange={e => setQuery(e.target.value)}
-                            placeholder="Search anime..."
+                            placeholder={searchType === "id" ? "Enter Series ID..." : "Search anime..."}
                             className="w-full bg-surface border border-border rounded-lg pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                             // oxlint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
@@ -76,9 +102,9 @@ export default function SearchPanel() {
                     </button>
                 </div>
 
-                {service === "crunchy" && (
-                    <div className="flex gap-2 flex-wrap">
-                        {["", "series", "movie_listing", "episode"].map(type => (
+                <div className="flex gap-2 flex-wrap">
+                    {service === "crunchy" ? (
+                        ["", "series", "movie_listing", "episode", "id"].map(type => (
                             <button
                                 key={type}
                                 type="button"
@@ -91,9 +117,21 @@ export default function SearchPanel() {
                             >
                                 {type || "All"}
                             </button>
-                        ))}
-                    </div>
-                )}
+                        ))
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setSearchType(searchType === "id" ? "" : "id")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                                searchType === "id"
+                                    ? "bg-primary text-white"
+                                    : "bg-surface border border-border text-muted hover:text-foreground hover:border-primary/30"
+                            }`}
+                        >
+                            Search by ID
+                        </button>
+                    )}
+                </div>
             </form>
 
             {/* Results */}
@@ -102,7 +140,7 @@ export default function SearchPanel() {
                     <SearchResultCard key={item.id} item={item} onSelect={handleSelectSeries} />
                 ))}
 
-                {searchResults.length > 0 && (
+                {searchResults.length > 0 && searchType !== "id" && (
                     <div className="flex justify-center gap-2 pt-2">
                         {page > 1 && (
                             <button
