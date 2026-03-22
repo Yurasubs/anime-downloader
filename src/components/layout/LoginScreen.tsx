@@ -50,6 +50,8 @@ export default function LoginScreen() {
                             onChange={e => setPassword(e.target.value)}
                             placeholder="Enter your password"
                             className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                            // oxlint-disable-next-line jsx-a11y/no-autofocus
+                            autoFocus
                         />
                     </div>
                     <button

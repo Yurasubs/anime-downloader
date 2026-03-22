@@ -17,7 +17,21 @@ import type {
 } from "@/types"
 
 export function useAPI() {
-    const store = useAppStore()
+    const setConnectionState = useAppStore(s => s.setConnectionState)
+    const setVersion = useAppStore(s => s.setVersion)
+    const setQueue = useAppStore(s => s.setQueue)
+    const setIsDownloading = useAppStore(s => s.setIsDownloading)
+    const setQueueRunning = useAppStore(s => s.setQueueRunning)
+    const setService = useAppStore(s => s.setService)
+    const setView = useAppStore(s => s.setView)
+    const addNotification = useAppStore(s => s.addNotification)
+    const setAvailableDubCodes = useAppStore(s => s.setAvailableDubCodes)
+    const setAvailableSubCodes = useAppStore(s => s.setAvailableSubCodes)
+    const setSearchResults = useAppStore(s => s.setSearchResults)
+    const setEpisodes = useAppStore(s => s.setEpisodes)
+    const setSelectedSeries = useAppStore(s => s.setSelectedSeries)
+    const setIsAuthenticated = useAppStore(s => s.setIsAuthenticated)
+
     const eventSourceRef = useRef<EventSource | null>(null)
 
     // -------------------------------------------------------------------
@@ -70,31 +84,40 @@ export function useAPI() {
     const connectPrivate = useCallback(
         async (password?: string) => {
             try {
-                store.setConnectionState("connecting")
+                setConnectionState("connecting")
                 const result = await fetchConnect(password)
 
-                store.setConnectionState("connected")
-                store.setVersion(result.version)
-                store.setQueue(result.queue as QueueItem[])
-                store.setIsDownloading(result.isDownloading)
-                store.setQueueRunning(result.queueRunning)
+                setConnectionState("connected")
+                setVersion(result.version)
+                setQueue(result.queue as QueueItem[])
+                setIsDownloading(result.isDownloading)
+                setQueueRunning(result.queueRunning)
 
                 if (result.type) {
-                    store.setService(result.type as ServiceType)
-                    store.setView("main")
+                    setService(result.type as ServiceType)
+                    setView("main")
                 } else {
-                    store.setView("service-select")
+                    setView("service-select")
                 }
 
                 // Start polling for real-time-ish updates
                 startPolling()
             } catch {
-                store.setConnectionState("disconnected")
-                store.addNotification("Connection failed. Check your password.", "error")
+                setConnectionState("disconnected")
+                addNotification("Connection failed. Check your password.", "error")
             }
         },
-        // oxlint-disable-next-line react/exhaustive-deps
-        [startPolling]
+        [
+            startPolling,
+            setConnectionState,
+            setVersion,
+            setQueue,
+            setIsDownloading,
+            setQueueRunning,
+            setService,
+            setView,
+            addNotification
+        ]
     )
 
     const checkSetup = useCallback(async () => {
@@ -102,7 +125,7 @@ export function useAPI() {
             const { isSetup, requirePassword } = await fetchSetupStatus()
 
             if (!isSetup) {
-                store.setView("setup")
+                setView("setup")
                 await connectPrivate()
                 return
             }
@@ -110,13 +133,12 @@ export function useAPI() {
             if (!requirePassword) {
                 await connectPrivate()
             } else {
-                store.setView("login")
+                setView("login")
             }
         } catch {
-            store.addNotification("Unable to connect to server", "error")
+            addNotification("Unable to connect to server", "error")
         }
-        // oxlint-disable-next-line react/exhaustive-deps
-    }, [connectPrivate])
+    }, [connectPrivate, setView, addNotification])
 
     // -------------------------------------------------------------------
     // API methods (same interface as the old useWebSocket)
@@ -126,24 +148,26 @@ export function useAPI() {
         return sendCommand<boolean>("setupServer", config)
     }, [])
 
-    const selectService = useCallback(async (service: ServiceType) => {
-        // 'setup' is fire-and-forget on the server
-        await sendCommand("setup", service)
-        store.setService(service)
-        store.setView("main")
-        // Small delay so the server has time to instantiate the service handler
-        await new Promise(r => setTimeout(r, 500))
-        // Load available language codes
-        try {
-            const dubCodes = await sendCommand<string[]>("availableDubCodes", undefined)
-            store.setAvailableDubCodes(dubCodes)
-            const subCodes = await sendCommand<string[]>("availableSubCodes", undefined)
-            store.setAvailableSubCodes(subCodes)
-        } catch {
-            // Non-critical
-        }
-        // oxlint-disable-next-line react/exhaustive-deps
-    }, [])
+    const selectService = useCallback(
+        async (service: ServiceType) => {
+            // 'setup' is fire-and-forget on the server
+            await sendCommand("setup", service)
+            setService(service)
+            setView("main")
+            // Small delay so the server has time to instantiate the service handler
+            await new Promise(r => setTimeout(r, 500))
+            // Load available language codes
+            try {
+                const dubCodes = await sendCommand<string[]>("availableDubCodes", undefined)
+                setAvailableDubCodes(dubCodes)
+                const subCodes = await sendCommand<string[]>("availableSubCodes", undefined)
+                setAvailableSubCodes(subCodes)
+            } catch {
+                // Non-critical
+            }
+        },
+        [setService, setView, setAvailableDubCodes, setAvailableSubCodes]
+    )
 
     const authenticate = useCallback(async (data: AuthData): Promise<AuthResponse> => {
         return sendCommand<AuthResponse>("auth", data)
@@ -177,25 +201,26 @@ export function useAPI() {
         return sendCommand("clearQueue", undefined)
     }, [])
 
-    const setDownloadQueue = useCallback(async (running: boolean) => {
-        await sendCommand("setDownloadQueue", running)
-        store.setQueueRunning(running)
-        // oxlint-disable-next-line react/exhaustive-deps
-    }, [])
+    const setDownloadQueue = useCallback(
+        async (running: boolean) => {
+            await sendCommand("setDownloadQueue", running)
+            setQueueRunning(running)
+        },
+        [setQueueRunning]
+    )
 
     const changeProvider = useCallback(async () => {
         const result = await sendCommand<boolean>("changeProvider", undefined)
         if (result) {
-            store.setService(null)
-            store.setView("service-select")
-            store.setSearchResults([])
-            store.setEpisodes([])
-            store.setSelectedSeries(null)
-            store.setIsAuthenticated(false)
+            setService(null)
+            setView("service-select")
+            setSearchResults([])
+            setEpisodes([])
+            setSelectedSeries(null)
+            setIsAuthenticated(false)
         }
         return result
-        // oxlint-disable-next-line react/exhaustive-deps
-    }, [])
+    }, [setService, setView, setSearchResults, setEpisodes, setSelectedSeries, setIsAuthenticated])
 
     const openFolder = useCallback(async (type: "content" | "config") => {
         return sendCommand("openFolder", type)

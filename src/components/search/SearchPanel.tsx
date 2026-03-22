@@ -62,6 +62,8 @@ export default function SearchPanel() {
                             onChange={e => setQuery(e.target.value)}
                             placeholder="Search anime..."
                             className="w-full bg-surface border border-border rounded-lg pl-10 pr-4 py-2.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                            // oxlint-disable-next-line jsx-a11y/no-autofocus
+                            autoFocus
                         />
                     </div>
                     <button

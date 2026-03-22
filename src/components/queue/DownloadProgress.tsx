@@ -34,7 +34,13 @@ export default function DownloadProgress() {
                 {/* Thumbnail */}
                 {downloadInfo.image ? (
                     <div className="relative w-20 h-12 flex-shrink-0 rounded overflow-hidden bg-background">
-                        <Image src={downloadInfo.image} alt="" fill className="object-cover" sizes="80px" />
+                        <Image
+                            src={downloadInfo.image}
+                            alt={downloadInfo.title || "Download thumbnail"}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                        />
                     </div>
                 ) : (
                     <div className="w-20 h-12 rounded bg-background flex-shrink-0 flex items-center justify-center">

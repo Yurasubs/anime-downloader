@@ -5,9 +5,13 @@ import path from "path"
 const ALLOWED_CONFIGS = ["cli-defaults", "bin-path", "dir-path"]
 
 function getConfigDir() {
-    // The backend config directory is one level up from the frontend,
-    // inside multi-downloader-nx/config/
-    return path.join(process.cwd(), "..", "multi-downloader-nx", "config")
+    const configPath = process.env.CONFIG_DIR
+    if (!configPath) {
+        throw new Error(
+            "CONFIG_DIR environment variable is not set. Please set it to the absolute path of your multi-downloader-nx/config directory."
+        )
+    }
+    return configPath
 }
 
 export async function GET(request: NextRequest) {

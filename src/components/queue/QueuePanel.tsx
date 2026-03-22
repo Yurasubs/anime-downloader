@@ -89,7 +89,13 @@ function QueueItemCard({ item, index, onRemove }: { item: QueueItem; index: numb
             {/* Thumbnail */}
             {item.image ? (
                 <div className="relative w-28 aspect-video flex-shrink-0 rounded-md shadow-sm overflow-hidden bg-background">
-                    <Image src={item.image} alt="" fill className="object-cover" sizes="112px" />
+                    <Image
+                        src={item.image}
+                        alt={item.title || "Queue thumbnail"}
+                        fill
+                        className="object-cover"
+                        sizes="112px"
+                    />
                 </div>
             ) : (
                 <div className="w-28 aspect-video rounded-md shadow-sm bg-background flex-shrink-0 flex items-center justify-center">

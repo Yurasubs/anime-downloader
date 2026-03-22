@@ -200,7 +200,7 @@ export default function EpisodePanel() {
                         <div className="relative w-12 aspect-[2/3] flex-shrink-0 rounded-lg overflow-hidden">
                             <Image
                                 src={selectedSeries.image}
-                                alt={selectedSeries.name || ""}
+                                alt={selectedSeries.name || "Series thumbnail"}
                                 fill
                                 className="object-cover"
                                 sizes="48px"
@@ -474,7 +474,13 @@ function EpisodeRow({
 
             {episode.img && (
                 <div className="relative w-20 h-12 flex-shrink-0 rounded overflow-hidden bg-background">
-                    <Image src={episode.img} alt="" fill className="object-cover" sizes="80px" />
+                    <Image
+                        src={episode.img}
+                        alt={episode.name || "Episode thumbnail"}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                    />
                 </div>
             )}
 

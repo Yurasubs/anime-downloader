@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent } from "react"
+import { useState, useEffect, FormEvent } from "react"
 import { useAPI } from "@/lib/useAPI"
 import { useAppStore } from "@/lib/store"
 import { X, Loader2, User, CheckCircle } from "lucide-react"
@@ -62,14 +62,19 @@ export default function AuthDialog({ onClose }: { onClose: () => void }) {
         }
     }
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose()
+        }
+        document.addEventListener("keydown", handleKeyDown)
+        return () => document.removeEventListener("keydown", handleKeyDown)
+    }, [onClose])
+
     return (
         <div
             role="presentation"
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={onClose}
-            onKeyDown={e => {
-                if (e.key === "Escape") onClose()
-            }}
         >
             <div
                 role="dialog"
@@ -118,6 +123,8 @@ export default function AuthDialog({ onClose }: { onClose: () => void }) {
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
                                 className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                                // oxlint-disable-next-line jsx-a11y/no-autofocus
+                                autoFocus
                             />
                         </div>
                         <div>
